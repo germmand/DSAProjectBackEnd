@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from sqlalchemy import and_
 
 from dsabackend.src.handlers import db
 from dsabackend.config import DbConfig
@@ -50,9 +49,33 @@ def seed():
         print("----------")
         print("Creating areas, graduate programs and subjects...")
 
-        postgrado_fisica = GraduateProgramModel("Postgrado en Física")
-        postgrado_matematica = GraduateProgramModel("Postgrado en Matemáticas (Maestría)")
-        postgrado_biologia = GraduateProgramModel("Postgrado en Biología Aplicada (Maestría)")
+        mec_cuantica = SubjectModel("Mecánica Cuántica", 4, 12, 4)
+        mec_estadistica = SubjectModel("Mecánica Estadística", 4, 12, 4)
+        teoria_dielectricos = SubjectModel("Teoría de Dieléctricos", 4, 12, 4)
+
+        teoria_probabilidad = SubjectModel("Teoría de Probabilidad", 4, 12, 4)
+        algebra_lineal = SubjectModel("Álgebra Lineal", 4, 12, 4)
+        algebra_multilineal = SubjectModel("Álgebra Multilineal", 4, 12, 4)
+
+        bioquimica = SubjectModel("Bioquímica Avanzada", 4, 12, 4)
+        biologia_molecular = SubjectModel("Biología Molecular", 4, 12, 4)
+        inmunologia_avanzada = SubjectModel("Inmunología Avanzada", 4, 12, 4)
+
+        postgrado_fisica = GraduateProgramModel("Postgrado en Física", [
+            mec_cuantica, 
+            mec_estadistica, 
+            teoria_dielectricos
+        ])
+        postgrado_matematica = GraduateProgramModel("Postgrado en Matemáticas (Maestría)", [
+            teoria_probabilidad,
+            algebra_lineal,
+            algebra_multilineal
+        ])
+        postgrado_biologia = GraduateProgramModel("Postgrado en Biología Aplicada (Maestría)", [
+            bioquimica,
+            biologia_molecular,
+            inmunologia_avanzada
+        ])
 
         cs_exactas = AreaModel("Ciencias Exactas y Naturales", [
             postgrado_fisica,
@@ -60,9 +83,33 @@ def seed():
             postgrado_biologia
         ])
 
-        postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Maestría)")
-        postgrado_electrica = GraduateProgramModel("Postgrado en Ingeniería Eléctrica (Maestría)")
-        postgrado_mecanica = GraduateProgramModel("Postgrado en Ingeniería Mecánica (Maestría)")
+        teoria_grafos = SubjectModel("Teoría de Grafos", 4, 12, 4)
+        redes_neuronales = SubjectModel("Redes Neuronales Artificiales", 4, 12, 4)
+        criptografia = SubjectModel("Criptografía", 4, 12, 4)
+
+        robotica = SubjectModel("Robótica", 4, 12, 4)
+        sistemas_control = SubjectModel("Sistemas de Control Distribuido", 4, 12, 4)
+        instrumentacion = SubjectModel("Instrumentación Inteligente", 4, 12, 4)
+
+        dinamica = SubjectModel("Dinámica Avanzada", 4, 12, 4)
+        elasticidad = SubjectModel("Elasticidad", 4, 12, 4)
+        ing_materiales = SubjectModel("Ingeniería de Materiales", 4, 12, 4)
+
+        postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Maestría)", [
+            teoria_grafos,
+            redes_neuronales,
+            criptografia
+        ])
+        postgrado_electrica = GraduateProgramModel("Postgrado en Ingeniería Eléctrica (Maestría)", [
+            robotica,
+            sistemas_control,
+            instrumentacion
+        ])
+        postgrado_mecanica = GraduateProgramModel("Postgrado en Ingeniería Mecánica (Maestría)", [
+            dinamica,
+            elasticidad,
+            ing_materiales
+        ])
 
         cs_ingenieria = AreaModel("Tecnología y Ciencias de la Ingeniería", [
             postgrado_comp,
@@ -70,9 +117,33 @@ def seed():
             postgrado_mecanica
         ])
 
-        postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)")
-        postgrado_dermatologia = GraduateProgramModel("Postgrado en Dermatología (Especialización)") 
-        postgrado_cardiologia = GraduateProgramModel("Postgrado en Cardiología (Especialización)")
+        cirugia_i = SubjectModel("Cirugía I", 4, 12, 4)
+        cirugia_ii = SubjectModel("Cirugía II", 4, 12, 4)
+        cirugia_iii = SubjectModel("Cirugía III", 4, 12, 4)
+
+        dermatologia_i = SubjectModel("Dermatología I", 4, 12, 4)
+        dermatologia_ii = SubjectModel("Dermatología II", 4, 12, 4)
+        dermatologia_iii = SubjectModel("Dermatología III", 4, 12, 4)
+
+        cardiologia_i = SubjectModel("Cardiología I", 4, 12, 4)
+        cardiologia_ii = SubjectModel("Cardiología II", 4, 12, 4)
+        cardiologia_iii = SubjectModel("Cardiología III", 4, 12, 4)
+
+        postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)", [
+            cirugia_i,
+            cirugia_ii,
+            cirugia_iii,
+        ])
+        postgrado_dermatologia = GraduateProgramModel("Postgrado en Dermatología (Especialización)", [
+            dermatologia_i,
+            dermatologia_ii,
+            dermatologia_iii,
+        ]) 
+        postgrado_cardiologia = GraduateProgramModel("Postgrado en Cardiología (Especialización)", [
+            cardiologia_i,
+            cardiologia_ii,
+            cardiologia_iii,
+        ])
 
         cs_medicas = AreaModel("Tecnología y Ciencias Médicas", [
             postgrado_cirugia,
