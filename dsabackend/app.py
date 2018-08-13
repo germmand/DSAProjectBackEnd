@@ -63,6 +63,12 @@ def seed():
             AdmissionStatusModel("Declinada")
         ]
 
+        subject_statuses = [
+            SubjectStatusModel("Cursada"),
+            SubjectStatusModel("Cursando"),
+            SubjectStatusModel("Por cursar")
+        ]
+
         for type in types:
             if ProgramTypeModel.query.filter_by(type_name=type.type_name).first() is None:
                 db.session.add(type)
@@ -70,6 +76,10 @@ def seed():
         for status in statuses:
             if AdmissionStatusModel.query.filter_by(status_name=status.status_name).first() is None:
                 db.session.add(status)
+
+        for subject_status in subject_statuses:
+            if SubjectStatusModel.query.filter_by(status_name=subject_status.status_name).first() is None:
+                db.session.add(subject_status)
         
         print("Types and statuses were starged and are ready to go into the database...")
         print("----------")

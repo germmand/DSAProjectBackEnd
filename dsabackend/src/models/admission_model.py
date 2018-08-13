@@ -9,6 +9,10 @@ class AdmissionModel(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('Admission_Statuses.id'), nullable=False)
     current_semester = db.Column(db.Integer, nullable=False)
 
+    subjects = db.relationship('AdmissionSubjectRelation',
+        lazy='select',
+        backref=db.backref('admission', lazy='joined'))
+
     def __init__(self, userid, programid, statusid, typeid):
         self.user_id = userid
         self.program_id = programid

@@ -12,6 +12,10 @@ class SubjectModel(db.Model):
 
     program_id = db.Column(db.Integer, db.ForeignKey('Graduate_Programs.id'), nullable=False)
 
+    admissions = db.relationship('AdmissionSubjectRelation',
+        lazy='select',
+        backref=db.backref('subject', lazy='joined'))
+
     def __init__(self, name, credits, hours, weeks, semester):
         self.subject_name = name
         self.subject_credits = credits
