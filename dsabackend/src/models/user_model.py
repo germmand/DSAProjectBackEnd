@@ -9,6 +9,10 @@ class UserModel(db.Model):
     fullname = db.Column(db.String(200), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('Roles.id'), nullable=False)
 
+    admissions = db.relationship('AdmissionModel',
+        lazy='select',
+        backref=db.backref('user', lazy='joined'))
+
     def __init__(self, email, password, fullname, role_identifier):
         self.email = email
         self.password = password
