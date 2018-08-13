@@ -163,7 +163,28 @@ def seed():
         
         print("Areas, programs and subjects were staged and are ready to go into the database...")
         print("----------")
+        print("Creating types and statuses for new admissions...")
+
+        types = [
+            AdmissionTypeModel("Semestral"),
+            AdmissionTypeModel("Modular")
+        ]
+
+        statuses = [
+            AdmissionStatusModel("En revisión"),
+            AdmissionStatusModel("Aceptada"),
+            AdmissionStatusModel("Declinada")
+        ]
+
+        for type in types:
+            if AdmissionTypeModel.query.filter_by(type_name=type.type_name).first() is None:
+                db.session.add(type)
+
+        for status in statuses:
+            if AdmissionStatusModel.query.filter_by(status_name=status.status_name).first() is None:
+                db.session.add(status)
         
+        print("Types and statuses were starged and are ready to go into the database...")
         # Here will go the rest of the database seeding while it keeps being developed...
 
         db.session.commit()

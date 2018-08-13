@@ -11,6 +11,10 @@ class GraduateProgramModel(db.Model):
         lazy='select',
         backref=db.backref('program', lazy='joined'))
 
+    admissions = db.relationship('AdmissionModel',
+        lazy='select',
+        backref=db.backref('program', lazy='joined'))
+
     def __init__(self, name):
         self.program_name = name
 
