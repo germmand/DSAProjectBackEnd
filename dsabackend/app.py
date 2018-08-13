@@ -47,6 +47,32 @@ def seed():
 
         print("Roles were staged and are ready to go into the database...")
         print("----------")
+        print("Creating types and statuses for admissions and programs...")
+
+        tipo_modular = ProgramTypeModel("Modular")
+        tipo_semestral = ProgramTypeModel("Semestral")
+
+        types = [
+            tipo_modular,
+            tipo_semestral
+        ]
+
+        statuses = [
+            AdmissionStatusModel("En revisión"),
+            AdmissionStatusModel("Aceptada"),
+            AdmissionStatusModel("Declinada")
+        ]
+
+        for type in types:
+            if ProgramTypeModel.query.filter_by(type_name=type.type_name).first() is None:
+                db.session.add(type)
+
+        for status in statuses:
+            if AdmissionStatusModel.query.filter_by(status_name=status.status_name).first() is None:
+                db.session.add(status)
+        
+        print("Types and statuses were starged and are ready to go into the database...")
+        print("----------")
         print("Creating areas, graduate programs and subjects...")
 
         mec_cuantica = SubjectModel("Mecánica Cuántica", 4, 12, 4)
@@ -61,17 +87,17 @@ def seed():
         biologia_molecular = SubjectModel("Biología Molecular", 4, 12, 4)
         inmunologia_avanzada = SubjectModel("Inmunología Avanzada", 4, 12, 4)
 
-        postgrado_fisica = GraduateProgramModel("Postgrado en Física", [
+        postgrado_fisica = GraduateProgramModel("Postgrado en Física", tipo_semestral, [
             mec_cuantica, 
             mec_estadistica, 
             teoria_dielectricos
         ])
-        postgrado_matematica = GraduateProgramModel("Postgrado en Matemáticas (Maestría)", [
+        postgrado_matematica = GraduateProgramModel("Postgrado en Matemáticas (Maestría)", tipo_semestral, [
             teoria_probabilidad,
             algebra_lineal,
             algebra_multilineal
         ])
-        postgrado_biologia = GraduateProgramModel("Postgrado en Biología Aplicada (Maestría)", [
+        postgrado_biologia = GraduateProgramModel("Postgrado en Biología Aplicada (Maestría)", tipo_modular, [
             bioquimica,
             biologia_molecular,
             inmunologia_avanzada
@@ -95,17 +121,17 @@ def seed():
         elasticidad = SubjectModel("Elasticidad", 4, 12, 4)
         ing_materiales = SubjectModel("Ingeniería de Materiales", 4, 12, 4)
 
-        postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Maestría)", [
+        postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Maestría)", tipo_semestral, [
             teoria_grafos,
             redes_neuronales,
             criptografia
         ])
-        postgrado_electrica = GraduateProgramModel("Postgrado en Ingeniería Eléctrica (Maestría)", [
+        postgrado_electrica = GraduateProgramModel("Postgrado en Ingeniería Eléctrica (Maestría)", tipo_semestral, [
             robotica,
             sistemas_control,
             instrumentacion
         ])
-        postgrado_mecanica = GraduateProgramModel("Postgrado en Ingeniería Mecánica (Maestría)", [
+        postgrado_mecanica = GraduateProgramModel("Postgrado en Ingeniería Mecánica (Maestría)", tipo_semestral, [
             dinamica,
             elasticidad,
             ing_materiales
@@ -129,17 +155,17 @@ def seed():
         cardiologia_ii = SubjectModel("Cardiología II", 4, 12, 4)
         cardiologia_iii = SubjectModel("Cardiología III", 4, 12, 4)
 
-        postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)", [
+        postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)", tipo_modular, [
             cirugia_i,
             cirugia_ii,
             cirugia_iii,
         ])
-        postgrado_dermatologia = GraduateProgramModel("Postgrado en Dermatología (Especialización)", [
+        postgrado_dermatologia = GraduateProgramModel("Postgrado en Dermatología (Especialización)", tipo_modular, [
             dermatologia_i,
             dermatologia_ii,
             dermatologia_iii,
         ]) 
-        postgrado_cardiologia = GraduateProgramModel("Postgrado en Cardiología (Especialización)", [
+        postgrado_cardiologia = GraduateProgramModel("Postgrado en Cardiología (Especialización)", tipo_modular, [
             cardiologia_i,
             cardiologia_ii,
             cardiologia_iii,
@@ -162,29 +188,6 @@ def seed():
                 db.session.add(area)
         
         print("Areas, programs and subjects were staged and are ready to go into the database...")
-        print("----------")
-        print("Creating types and statuses for new admissions...")
-
-        types = [
-            AdmissionTypeModel("Semestral"),
-            AdmissionTypeModel("Modular")
-        ]
-
-        statuses = [
-            AdmissionStatusModel("En revisión"),
-            AdmissionStatusModel("Aceptada"),
-            AdmissionStatusModel("Declinada")
-        ]
-
-        for type in types:
-            if AdmissionTypeModel.query.filter_by(type_name=type.type_name).first() is None:
-                db.session.add(type)
-
-        for status in statuses:
-            if AdmissionStatusModel.query.filter_by(status_name=status.status_name).first() is None:
-                db.session.add(status)
-        
-        print("Types and statuses were starged and are ready to go into the database...")
         # Here will go the rest of the database seeding while it keeps being developed...
 
         db.session.commit()

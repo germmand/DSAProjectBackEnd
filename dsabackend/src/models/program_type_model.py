@@ -1,12 +1,12 @@
 from dsabackend.src.handlers import db
 
-class AdmissionTypeModel(db.Model):
-    __tablename__ = 'Admission_Types'
+class ProgramTypeModel(db.Model):
+    __tablename__ = 'Program_Types'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type_name = db.Column(db.String(50), nullable=False, unique=True)
     
-    admissions = db.relationship('AdmissionModel',
+    programs = db.relationship('GraduateProgramModel',
         lazy='select',
         backref=db.backref('type', lazy='joined'))
 
