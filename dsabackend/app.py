@@ -75,17 +75,17 @@ def seed():
         print("----------")
         print("Creating areas, graduate programs and subjects...")
 
-        mec_cuantica = SubjectModel("Mecánica Cuántica", 4, 12, 4)
-        mec_estadistica = SubjectModel("Mecánica Estadística", 4, 12, 4)
-        teoria_dielectricos = SubjectModel("Teoría de Dieléctricos", 4, 12, 4)
+        mec_cuantica = SubjectModel("Mecánica Cuántica", 4, 12, 4, 1)
+        mec_estadistica = SubjectModel("Mecánica Estadística", 4, 12, 4, 2)
+        teoria_dielectricos = SubjectModel("Teoría de Dieléctricos", 4, 12, 4, 3)
 
-        teoria_probabilidad = SubjectModel("Teoría de Probabilidad", 4, 12, 4)
-        algebra_lineal = SubjectModel("Álgebra Lineal", 4, 12, 4)
-        algebra_multilineal = SubjectModel("Álgebra Multilineal", 4, 12, 4)
+        teoria_probabilidad = SubjectModel("Teoría de Probabilidad", 4, 12, 4, 1)
+        algebra_lineal = SubjectModel("Álgebra Lineal", 4, 12, 4, 2)
+        algebra_multilineal = SubjectModel("Álgebra Multilineal", 4, 12, 4, 3)
 
-        bioquimica = SubjectModel("Bioquímica Avanzada", 4, 12, 4)
-        biologia_molecular = SubjectModel("Biología Molecular", 4, 12, 4)
-        inmunologia_avanzada = SubjectModel("Inmunología Avanzada", 4, 12, 4)
+        bioquimica = SubjectModel("Bioquímica Avanzada", 4, 12, 4, 1)
+        biologia_molecular = SubjectModel("Biología Molecular", 4, 12, 4, 2)
+        inmunologia_avanzada = SubjectModel("Inmunología Avanzada", 4, 12, 4, 3)
 
         postgrado_fisica = GraduateProgramModel("Postgrado en Física", tipo_semestral, [
             mec_cuantica, 
@@ -109,17 +109,17 @@ def seed():
             postgrado_biologia
         ])
 
-        teoria_grafos = SubjectModel("Teoría de Grafos", 4, 12, 4)
-        redes_neuronales = SubjectModel("Redes Neuronales Artificiales", 4, 12, 4)
-        criptografia = SubjectModel("Criptografía", 4, 12, 4)
+        teoria_grafos = SubjectModel("Teoría de Grafos", 4, 12, 4, 1)
+        redes_neuronales = SubjectModel("Redes Neuronales Artificiales", 4, 12, 4, 2)
+        criptografia = SubjectModel("Criptografía", 4, 12, 4, 3)
 
-        robotica = SubjectModel("Robótica", 4, 12, 4)
-        sistemas_control = SubjectModel("Sistemas de Control Distribuido", 4, 12, 4)
-        instrumentacion = SubjectModel("Instrumentación Inteligente", 4, 12, 4)
+        robotica = SubjectModel("Robótica", 4, 12, 4, 1)
+        sistemas_control = SubjectModel("Sistemas de Control Distribuido", 4, 12, 4, 2)
+        instrumentacion = SubjectModel("Instrumentación Inteligente", 4, 12, 4, 3)
 
-        dinamica = SubjectModel("Dinámica Avanzada", 4, 12, 4)
-        elasticidad = SubjectModel("Elasticidad", 4, 12, 4)
-        ing_materiales = SubjectModel("Ingeniería de Materiales", 4, 12, 4)
+        dinamica = SubjectModel("Dinámica Avanzada", 4, 12, 4, 1)
+        elasticidad = SubjectModel("Elasticidad", 4, 12, 4, 2)
+        ing_materiales = SubjectModel("Ingeniería de Materiales", 4, 12, 4, 3)
 
         postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Maestría)", tipo_semestral, [
             teoria_grafos,
@@ -143,17 +143,17 @@ def seed():
             postgrado_mecanica
         ])
 
-        cirugia_i = SubjectModel("Cirugía I", 4, 12, 4)
-        cirugia_ii = SubjectModel("Cirugía II", 4, 12, 4)
-        cirugia_iii = SubjectModel("Cirugía III", 4, 12, 4)
+        cirugia_i = SubjectModel("Cirugía I", 4, 12, 4, 1)
+        cirugia_ii = SubjectModel("Cirugía II", 4, 12, 4, 2)
+        cirugia_iii = SubjectModel("Cirugía III", 4, 12, 4, 3)
 
-        dermatologia_i = SubjectModel("Dermatología I", 4, 12, 4)
-        dermatologia_ii = SubjectModel("Dermatología II", 4, 12, 4)
-        dermatologia_iii = SubjectModel("Dermatología III", 4, 12, 4)
+        dermatologia_i = SubjectModel("Dermatología I", 4, 12, 4, 1)
+        dermatologia_ii = SubjectModel("Dermatología II", 4, 12, 4, 2)
+        dermatologia_iii = SubjectModel("Dermatología III", 4, 12, 4, 3)
 
-        cardiologia_i = SubjectModel("Cardiología I", 4, 12, 4)
-        cardiologia_ii = SubjectModel("Cardiología II", 4, 12, 4)
-        cardiologia_iii = SubjectModel("Cardiología III", 4, 12, 4)
+        cardiologia_i = SubjectModel("Cardiología I", 4, 12, 4, 1)
+        cardiologia_ii = SubjectModel("Cardiología II", 4, 12, 4, 2)
+        cardiologia_iii = SubjectModel("Cardiología III", 4, 12, 4, 3)
 
         postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)", tipo_modular, [
             cirugia_i,
