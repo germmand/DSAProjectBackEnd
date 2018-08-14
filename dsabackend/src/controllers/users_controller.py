@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from passlib.hash import pbkdf2_sha256
 from dsabackend.src.models import UserModel, RoleModel
 from dsabackend.src.handlers import db
 
@@ -51,7 +52,7 @@ def create_new_user():
     data = request.get_json()
     
     try: 
-        user = UserModel(data["email"], data["password"], data["fullname"], data["role_id"])
+        user = UserModel(data["email"], pbkdf2_sha256.hash(data["password"]), data["fullname"], data["role_id"])
 
         db.session.add(user)
         db.session.commit()

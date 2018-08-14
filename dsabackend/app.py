@@ -1,13 +1,17 @@
 from flask import Flask
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
+from flask_jwt_extended import JWTManager
 
 from dsabackend.src.handlers import db
-from dsabackend.config import DbConfig
-
+from dsabackend.config import (
+    DbConfig,
+    JWTConfig
+)
 from dsabackend.src.controllers import (
     DefaultController,
-    UsersController
+    UsersController,
+    AuthController
 )
 
 # Creating Flask Application
@@ -16,15 +20,20 @@ app = Flask(__name__)
 # Registering Application's Blueprints
 app.register_blueprint(DefaultController, url_prefix='/')
 app.register_blueprint(UsersController, url_prefix='/api/users')
+app.register_blueprint(AuthController, url_prefix='/api/auth')
 
 # Adding SQLAlchemy support
 app.config['SQLALCHEMY_DATABASE_URI'] = DbConfig.DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = DbConfig.TRACK_MODIFICATIONS
+app.config['JWT_SECRET_KEY'] = JWTConfig.JWT_SECRET
+
 db.init_app(app)
 migrate = Migrate(app, db)
 
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
+
+jwt = JWTManager(app)
 
 # Importing models in order for Alembic to be able to detect upcoming changes to the database's schema when creating migrations.
 # DO NOT remove this line.
