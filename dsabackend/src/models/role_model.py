@@ -12,3 +12,10 @@ class RoleModel(db.Model):
 
     def __repr__(self):
         return '<RoleModel %r>' % (self.role_name)
+
+    @property
+    def serialized(self):
+        return {
+            "id": self.id,
+            "name": self.role_name
+        }
