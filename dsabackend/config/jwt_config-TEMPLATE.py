@@ -1,0 +1,2 @@
+class JWTConfig:
+    JWT_SECRET = "JWT-API-SECRET-HERE"

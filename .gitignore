@@ -2,6 +2,7 @@
 venv/**
 **/__pycache__
 dsabackend/config/db_config.py
+dsabackend/config/jwt_config.py
 
 # Pycharm unnecesary files for control systems.
 # This files contain user specific settings, hence they aren't neccesary.
