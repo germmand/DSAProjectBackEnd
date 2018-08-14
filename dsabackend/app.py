@@ -26,6 +26,8 @@ app.register_blueprint(AuthController, url_prefix='/api/auth')
 app.config['SQLALCHEMY_DATABASE_URI'] = DbConfig.DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = DbConfig.TRACK_MODIFICATIONS
 app.config['JWT_SECRET_KEY'] = JWTConfig.JWT_SECRET
+app.config['JWT_BLACKLIST_ENABLED'] = JWTConfig.JWT_BLACKLIST_ENABLED
+app.config['JWT_BLACKLIST_TOKENS_CHECKS'] = JWTConfig.JWT_BLACKLIST_TOKENS
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -38,6 +40,13 @@ jwt = JWTManager(app)
 # Importing models in order for Alembic to be able to detect upcoming changes to the database's schema when creating migrations.
 # DO NOT remove this line.
 from dsabackend.src.models import *
+
+# This is done in order to prevent previously invalidated tokens to gain access to protected endpoints.
+@jwt.token_in_blacklist_loader
+def check_blacklisted_tokens(decrypted_token):
+    jti = decrypted_token['jti']
+    
+    return RevokeTokenModel.is_jti_blacklisted(jti) 
 
 @manager.command
 def seed(): 
