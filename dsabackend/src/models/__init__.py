@@ -8,6 +8,7 @@ from dsabackend.src.models.admission_status_model import AdmissionStatusModel
 from dsabackend.src.models.program_type_model import ProgramTypeModel
 from dsabackend.src.models.subject_status_model import SubjectStatusModel
 from dsabackend.src.models.admission_subject_relation import AdmissionSubjectRelation
+from dsabackend.src.models.revoke_token_model import RevokeTokenModel
 
 __all__ = [
     "UserModel", 
@@ -19,5 +20,6 @@ __all__ = [
     "AdmissionStatusModel",
     "ProgramTypeModel",
     "SubjectStatusModel",
-    "AdmissionSubjectRelation"
+    "AdmissionSubjectRelation",
+    "RevokeTokenModel"
 ]
