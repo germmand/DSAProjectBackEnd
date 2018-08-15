@@ -10,11 +10,20 @@ class AdmissionModel(db.Model):
     current_semester = db.Column(db.Integer, nullable=False)
 
     subjects = db.relationship('AdmissionSubjectRelation',
-        lazy='select',
-        backref=db.backref('admission', lazy='joined'))
+                                lazy='select',
+                                backref=db.backref('admission', lazy='joined'))
 
-    def __init__(self, userid, programid, statusid, typeid):
+    def __init__(self, userid, programid, statusid):
         self.user_id = userid
         self.program_id = programid
         self.status_id = statusid
         self.current_semester = 0
+
+    @property
+    def serialized(self):
+        return {
+            "admission_id": self.id,
+            "user_email": self.user.email,
+            "program_name": self.program.program_name,
+            "status": self.status.status_name
+        }

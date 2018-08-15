@@ -52,7 +52,10 @@ def create_new_user():
     data = request.get_json()
     
     try: 
-        user = UserModel(data["email"], pbkdf2_sha256.hash(data["password"]), data["fullname"], data["role_id"])
+        user = UserModel(data["email"], 
+                         pbkdf2_sha256.hash(data["password"]), 
+                         data["fullname"], 
+                         data["role_id"])
 
         db.session.add(user)
         db.session.commit()
