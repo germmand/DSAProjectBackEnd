@@ -3,7 +3,8 @@ from dsabackend.src.handlers import db
 from sqlalchemy.exc import IntegrityError
 from dsabackend.src.models import (
     AdmissionModel,
-    UserModel
+    UserModel,
+    AdmissionSubjectRelation
 )
 
 AdmissionsController = Blueprint('AdmissionsController', __name__)
@@ -56,6 +57,14 @@ def accept_or_decline_application():
             return jsonify({"error": "admission '" + str(admission_id) + "' does not exist."}), 404
 
         admission.status_id = status_id
+        if status_id == 2:
+            admission.current_semester = 1  
+
+        db.session.commit()
+
+        if admission.current_semester == 1:
+            for subject in admission.program.subjects:
+                db.session.add(AdmissionSubjectRelation(subject.id, admission.id, 3))
 
         db.session.commit()
     except KeyError as ke:
