@@ -3,7 +3,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_
 from dsabackend.src.handlers import db
 from dsabackend.src.models import (
-    AdmissionSubjectRelation
+    AdmissionSubjectRelation,
+    AdmissionModel,
+    SubjectStatusModel
 )
 
 SubjectsController = Blueprint('SubjectsController', __name__)
@@ -51,10 +53,32 @@ def get_subjects_by_status():
     admission_id = request.args.get('admission', default=0, type=int)
     status_id = request.args.get('status', default=0, type=int)
 
-    subjects = AdmissionSubjectRelation.query.filter(
-        and_(AdmissionSubjectRelation.admission_id == admission_id,
-             AdmissionSubjectRelation.status_id == status_id)).all()
+    if status_id != 0:
+        subjects = AdmissionSubjectRelation.query.filter(
+            and_(AdmissionSubjectRelation.admission_id == admission_id,
+                 AdmissionSubjectRelation.status_id == status_id)).all()
+    else:
+        subjects = AdmissionSubjectRelation.query.filter_by(admission_id=admission_id).all()
     
     serialized_result = [subject.serialized for subject in subjects]
 
     return jsonify({"subjects": serialized_result}), 200 
+
+@SubjectsController.route('/<int:admission_id>', methods=['GET'])
+def get_subjects_to_signup(admission_id):
+    admission = AdmissionModel.query.get(admission_id)
+
+    if admission is None:
+        return jsonify({"error": "Admission '" + str(admission_id) + "' does not exist."}), 404
+
+    status_id = SubjectStatusModel.query.filter_by(status_name="Por cursar").first().id
+
+    subjects = [
+        subject_admission.subject.serialized 
+        for subject_admission in admission.subjects 
+            if (subject_admission.subject.subject_semester == admission.current_semester 
+                and
+                subject_admission.status_id == status_id)
+    ]
+    
+    return jsonify({"subjects": subjects}), 200

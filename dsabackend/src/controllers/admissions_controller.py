@@ -4,7 +4,8 @@ from sqlalchemy.exc import IntegrityError
 from dsabackend.src.models import (
     AdmissionModel,
     UserModel,
-    AdmissionSubjectRelation
+    AdmissionSubjectRelation,
+    AdmissionStatusModel
 )
 
 AdmissionsController = Blueprint('AdmissionsController', __name__)
@@ -14,9 +15,13 @@ def create_admission():
     data = request.get_json()
 
     try:
-        # The '1' as the third argument means the admission is under review...
+        admission_status_id = AdmissionStatusModel
+            .query
+            .filter_by(status_name="En revisión")
+            .first().id
+
         # user_id has to be taken from the token; meanwhile, it's done like this for testing...
-        admission = AdmissionModel(data["user_id"], data["program_id"], 1)
+        admission = AdmissionModel(data["user_id"], data["program_id"], admission_status_id)
 
         db.session.add(admission)
         db.session.commit()
