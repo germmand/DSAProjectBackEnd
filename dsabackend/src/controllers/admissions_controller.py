@@ -5,7 +5,8 @@ from dsabackend.src.models import (
     AdmissionModel,
     UserModel,
     AdmissionSubjectRelation,
-    AdmissionStatusModel
+    AdmissionStatusModel,
+    SubjectStatusModel
 )
 
 AdmissionsController = Blueprint('AdmissionsController', __name__)
@@ -15,10 +16,7 @@ def create_admission():
     data = request.get_json()
 
     try:
-        admission_status_id = AdmissionStatusModel
-            .query
-            .filter_by(status_name="En revisión")
-            .first().id
+        admission_status_id = AdmissionStatusModel.query.filter_by(status_name="En revisión").first().id
 
         # user_id has to be taken from the token; meanwhile, it's done like this for testing...
         admission = AdmissionModel(data["user_id"], data["program_id"], admission_status_id)
@@ -100,4 +98,40 @@ def get_admissions_by_user(user_id):
 
     return jsonify({
         "admissions": admissions
+    }), 200
+
+@AdmissionsController.route('/update', methods=['PATCH'])
+def update_semesters():
+    admissions = AdmissionModel.query.all()
+
+    approved_id = SubjectStatusModel.query.filter_by(status_name="Cursada").first().id
+
+    for admission in admissions:
+        # We first find the subjects that the student has approved
+        # on his current semester.
+        approved_subjects = [
+            subject_rel
+            for subject_rel in admission.subjects
+                if (subject_rel.subject.subject_semester == admission.current_semester
+                    and
+                    subject_rel.status_id == approved_id)
+        ]
+
+        # Then we find how many subjects the program has on the same semester.
+        program_semester_subjects = [
+            subject
+            for subject in admission.program.subjects
+                if subject.subject_semester == admission.current_semester
+        ]
+
+        # If the quantity of approved subjects by the student on his current semester
+        # is equal to the quantity of subjects within the program on that same semester,
+        # it means the student has approved all of the subjects, we sum up one to his current semester.
+        if len(approved_subjects) == len(program_semester_subjects):
+            admission.current_semester += 1
+
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Admissions were updated successfully!"
     }), 200

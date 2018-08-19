@@ -25,5 +25,7 @@ class AdmissionModel(db.Model):
             "admission_id": self.id,
             "user_email": self.user.email,
             "program_name": self.program.program_name,
-            "status": self.status.status_name
+            "status": self.status.status_name,
+            "current_semester": self.current_semester,
+            "type": self.program.type.type_name
         }
