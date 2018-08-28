@@ -2,6 +2,7 @@ from flask import Flask
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 from dsabackend.src.handlers import db
 from dsabackend.config import (
@@ -19,6 +20,13 @@ from dsabackend.src.controllers import (
 
 # Creating Flask Application
 app = Flask(__name__)
+
+# Allowing CORS
+app_cors = CORS(app, 
+                resources='*',
+                origins='*',
+                methods='*',
+                allow_headers='*')
 
 # Registering Application's Blueprints
 app.register_blueprint(DefaultController, url_prefix='/')
