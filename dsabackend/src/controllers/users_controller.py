@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from passlib.hash import pbkdf2_sha256
+from re import search
 from dsabackend.src.models import UserModel, RoleModel
 from dsabackend.src.handlers import db
 
@@ -52,7 +53,11 @@ def create_new_user():
     data = request.get_json()
     
     try: 
-        user = UserModel(data["email"], 
+        if search('^V-\d+$', data["id"]) is None:
+            return jsonify({"error": "Identifier has to follow the format: V-12345678"}), 400
+
+        user = UserModel(data["id"],
+                         data["email"], 
                          pbkdf2_sha256.hash(data["password"]), 
                          data["fullname"], 
                          data["role_id"])

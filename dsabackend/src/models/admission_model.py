@@ -4,7 +4,7 @@ class AdmissionModel(db.Model):
     __tablename__ = 'Admissions'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)    
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.id'), nullable=False)    
     program_id = db.Column(db.Integer, db.ForeignKey('Graduate_Programs.id'), nullable=False)
     status_id = db.Column(db.Integer, db.ForeignKey('Admission_Statuses.id'), nullable=False)
     current_semester = db.Column(db.Integer, nullable=False)
