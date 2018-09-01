@@ -39,7 +39,8 @@ def login():
     return jsonify({
         "message": "Logged in successfully!",
         "access_token": access_token,
-        "refresh_token": refresh_token
+        "refresh_token": refresh_token,
+        "user": user.serialized
     })
 
 @AuthController.route('/refresh', methods=['GET'])
