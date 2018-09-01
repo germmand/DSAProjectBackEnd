@@ -22,11 +22,7 @@ from dsabackend.src.controllers import (
 app = Flask(__name__)
 
 # Allowing CORS
-app_cors = CORS(app, 
-                resources='*',
-                origins='*',
-                methods='*',
-                allow_headers='*')
+app_cors = CORS(app)
 
 # Registering Application's Blueprints
 app.register_blueprint(DefaultController, url_prefix='/')
