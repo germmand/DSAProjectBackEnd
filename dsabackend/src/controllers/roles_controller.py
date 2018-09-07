@@ -14,6 +14,19 @@ def get_all_roles():
         "roles": roles
     }), 200
 
+@RolesController.route('/<string:role_name>', methods=['GET'])
+def get_role_by_name(role_name):
+    role = RoleModel.query.filter_by(role_name=role_name).first()
+
+    if role is None:
+        return jsonify({
+            "error": "The role '" + role_name + "' does no exist."
+        }), 404
+
+    return jsonify({
+        "role": role.serialized
+    }), 200
+
 @RolesController.route('/<int:user_id>', methods=['GET'])
 def get_all_users_by_role(user_id):
     db_role = RoleModel.query.filter_by(id=user_id).first()
