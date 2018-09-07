@@ -22,3 +22,14 @@ class SubjectModel(db.Model):
         self.hours_per_week = hours
         self.amount_of_weeks = weeks
         self.subject_semester = semester
+
+    @property
+    def serialized(self):
+        return {
+            "id": self.id,
+            "name": self.subject_name,
+            "credits": self.subject_credits,
+            "hours_per_week": self.hours_per_week,
+            "weeks": self.amount_of_weeks,
+            "semester": self.subject_semester
+        }

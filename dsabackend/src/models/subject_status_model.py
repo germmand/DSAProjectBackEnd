@@ -12,3 +12,10 @@ class SubjectStatusModel(db.Model):
 
     def __init__(self, name):
         self.status_name = name
+
+    @property
+    def serialized(self):
+        return {
+            "id": self.id,
+            "name": self.status_name
+        }

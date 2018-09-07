@@ -11,3 +11,10 @@ class AdmissionSubjectRelation(db.Model):
         self.subject_id = subjectid
         self.admission_id = admissionid
         self.status_id = statusid
+
+    @property
+    def serialized(self):
+        return {
+            "subject": self.subject.serialized,
+            "status": self.status.serialized
+        }

@@ -2,6 +2,7 @@ from flask import Flask
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 from dsabackend.src.handlers import db
 from dsabackend.config import (
@@ -11,16 +12,25 @@ from dsabackend.config import (
 from dsabackend.src.controllers import (
     DefaultController,
     UsersController,
-    AuthController
+    AuthController,
+    RolesController,
+    AdmissionsController,
+    SubjectsController
 )
 
 # Creating Flask Application
 app = Flask(__name__)
 
+# Allowing CORS
+app_cors = CORS(app)
+
 # Registering Application's Blueprints
 app.register_blueprint(DefaultController, url_prefix='/')
 app.register_blueprint(UsersController, url_prefix='/api/users')
 app.register_blueprint(AuthController, url_prefix='/api/auth')
+app.register_blueprint(RolesController, url_prefix='/api/roles')
+app.register_blueprint(AdmissionsController, url_prefix='/api/admissions')
+app.register_blueprint(SubjectsController, url_prefix='/api/subjects')
 
 # Adding SQLAlchemy support
 app.config['SQLALCHEMY_DATABASE_URI'] = DbConfig.DATABASE_URI
