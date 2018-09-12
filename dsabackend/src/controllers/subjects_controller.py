@@ -7,10 +7,15 @@ from dsabackend.src.models import (
     AdmissionModel,
     SubjectStatusModel
 )
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity
+)
 
 SubjectsController = Blueprint('SubjectsController', __name__)
 
 @SubjectsController.route('/', methods=['PUT'])
+@jwt_required
 def update_subject_on_admission():
     data = request.get_json()
 
@@ -25,14 +30,14 @@ def update_subject_on_admission():
 
         if subject_admission is None:
             return jsonify({
-                "error": "Subject '" + str(subject_id) + "' on Admission '" + str(admission_id) + "' does not exist."
+                "error": "La asignatura '" + str(subject_id) + "' en la admissión '" + str(admission_id) + "' no existe."
             }), 404
         
         subject_admission.status_id = status_id
 
         db.session.commit()
     except KeyError as ke:
-        return jsonify({"error": str(ke) + " field is missing."}), 400        
+        return jsonify({"error": "El campo: " + str(ke) + " no fue enviado."}), 400        
     except IntegrityError as ie:
         db.session.rollback()
 
@@ -46,9 +51,10 @@ def update_subject_on_admission():
         return jsonify({"error": str(e)}), 500
 
     return jsonify({
-        "message": "Subject for admission '" + str(admission_id) + "' has been updated successfully."}), 200
+        "message": "La asignatura para la admissión '" + str(admission_id) + "' se ha actualizado con éxito."}), 200
 
 @SubjectsController.route('/', methods=['GET'])
+@jwt_required
 def get_subjects_by_status():
     admission_id = request.args.get('admission', default=0, type=int)
     status_id = request.args.get('status', default=0, type=int)
@@ -65,11 +71,12 @@ def get_subjects_by_status():
     return jsonify({"subjects": serialized_result}), 200 
 
 @SubjectsController.route('/<int:admission_id>', methods=['GET'])
+@jwt_required
 def get_subjects_to_signup(admission_id):
     admission = AdmissionModel.query.get(admission_id)
 
     if admission is None:
-        return jsonify({"error": "Admission '" + str(admission_id) + "' does not exist."}), 404
+        return jsonify({"error": "La admissión '" + str(admission_id) + "' no existe."}), 404
 
     status_id = SubjectStatusModel.query.filter_by(status_name="Por cursar").first().id
 

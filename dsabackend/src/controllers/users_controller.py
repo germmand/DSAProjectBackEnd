@@ -8,9 +8,15 @@ from sqlalchemy.exc import (
     IntegrityError
 )
 
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity
+)
+
 UsersController = Blueprint('UsersController', __name__)
 
 @UsersController.route('/', methods=['GET'])
+@jwt_required
 def get_users():
     page = request.args.get('page', default=0, type=int)
     size = request.args.get('size', default=0, type=int)
@@ -21,40 +27,48 @@ def get_users():
     return jsonify(users = [user.serialized for user in users]), 200
 
 @UsersController.route('/<int:user_id>', methods=['GET'])
+@jwt_required
 def get_user_by_id(user_id):
     user = UserModel.query.get(user_id)
 
     if user is None:
         return jsonify({
-            "error": "User '" + str(user_id) + "' does not exist."
+            "error": "El usuario '" + str(user_id) + "' no existe."
         }), 404
 
     return jsonify(user.serialized), 200
 
 @UsersController.route('/<int:user_id>', methods=['DELETE'])
+@jwt_required
 def delete_user_by_id(user_id):
+    if get_jwt_identity()["role"] != "Administrador":
+        return jsonify({
+            "error": "Sólo administradores tienen acceso a este recurso." 
+        }), 401
+
     user = UserModel.query.get(user_id)
 
     if user is None:
         return jsonify({
-            "error": "User '" + str(user_id) + "' does not exist."
+            "error": "El usuario '" + str(user_id) + "' no existe."
         }), 404
 
     db.session.delete(user)
     db.sesion.commit()
 
     return jsonify({
-        "message": "User deleted successfully.",
+        "message": "Usuario eliminado con éxito.",
         "user_deleted": user.serialized
     }), 200
 
+# Éste endpoint no lleva el decorador jwt_required porque es el que se usa para signup.
 @UsersController.route('/', methods=['POST'])
 def create_new_user():
     data = request.get_json()
     
     try: 
         if search('^V-\d+$', data["id"]) is None:
-            return jsonify({"error": "Identifier has to follow the format: V-12345678"}), 400
+            return jsonify({"error": "La cédula tiene que seguir el siguiente formato: V-12345678"}), 400
 
         user = UserModel(data["id"],
                          data["email"], 
@@ -65,7 +79,7 @@ def create_new_user():
         db.session.add(user)
         db.session.commit()
     except KeyError as ke:
-        return jsonify({"error": str(ke) + " field is missing."}), 400
+        return jsonify({"error": "El campo: " + str(ke) + " no fue enviado."}), 400
     except IntegrityError as ie:
         db.session.rollback()
 
@@ -77,23 +91,24 @@ def create_new_user():
         db.session.rollback() # In case anything was tried to be committed into the database.
 
         return jsonify({
-            "message": "Uh oh! Something went terribly wrong.",
+            "message": "¡Ha ocurrido un error!",
             "error": str(e)
         }), 500
     
     return jsonify({
-        "message": "User created successfully.",
+        "message": "¡Usuario creado con éxito!",
         "user_created": user.serialized
     }), 201
 
 @UsersController.route('/<int:user_id>', methods=['PUT'])
+@jwt_required
 def update_user_data(user_id):
     user = UserModel.query.get(user_id)
     data = request.get_json()
 
     if user is None:
         return jsonify({
-            "error": "User '" + str(user_id) + "' does not exist."
+            "error": "El usuario '" + str(user_id) + "' no existe."
         }), 400
 
     if "email" in data:
@@ -114,6 +129,6 @@ def update_user_data(user_id):
         return jsonify({"error": detailed_extracted_message}), 400
        
     return jsonify({
-        "message": "User updated successfully.",
+        "message": "Datos del usuario actualizados correctamente.",
         "user_updated": user.serialized
     }), 200 

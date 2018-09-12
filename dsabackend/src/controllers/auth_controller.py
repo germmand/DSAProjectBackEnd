@@ -26,10 +26,10 @@ def login():
 
         user = UserModel.query.filter_by(email=email).first()
         if user is None:
-            return jsonify({"error": "Credentials provided are incorrect."}), 401
+            return jsonify({"error": "Correo o contraseña incorrectos."}), 401
         
         if not pbkdf2_sha256.verify(password, user.password):
-            return jsonify({"error": "Credentials provided are incorrect."}), 401 
+            return jsonify({"error": "Correo o contraseña incorrectos."}), 401 
 
         access_token = create_access_token(identity=user.serialized)
         refresh_token = create_refresh_token(identity=user.serialized)
@@ -37,7 +37,7 @@ def login():
         return jsonify({"error": str(ke) + " field is missing."}), 400
 
     return jsonify({
-        "message": "Logged in successfully!",
+        "message": "¡Sesión iniciada con éxito!",
         "access_token": access_token,
         "refresh_token": refresh_token,
         "user": user.serialized
@@ -56,7 +56,7 @@ def refresh_access_token():
         revoke_token.add()
     except Exception as e:
         return jsonify({ 
-            "message": "An error has occurred!",
+            "message": "¡Ha ocurrido un error!",
             "error": str(e)
         })
 
@@ -64,7 +64,7 @@ def refresh_access_token():
     refresh_token = create_refresh_token(identity=current_user)
 
     return jsonify({
-        "message": "Both access token and refresh token has been refreshed.",
+        "message": "Tanto el token de acceso como el de refresco han sido renovados.",
         "access_token": access_token,
         "refresh_token": refresh_token
     })
@@ -79,12 +79,12 @@ def access_token_logout():
         revoke_token.add()
     except Exception as e:
         return jsonify({
-            "message": "An error has occurred!",
+            "message": "¡Un error ha ocurrido!",
             "error": str(e)
         })
 
     return jsonify({
-        "message": "Access token has been revoked successfully!"
+        "message": "¡Token de acceso revocado con éxito!"
     })
 
 @AuthController.route('/refresh/logout', methods=['GET'])
@@ -97,10 +97,10 @@ def refresh_token_logout():
         revoke_token.add() 
     except Exception as e:
         return jsonify({
-            "message": "An error has occurred!",
+            "message": "¡Ha ocurrido un error!",
             "error": str(e)
         })
 
     return jsonify({
-        "message": "Refresh token has been revoked successfully!"
+        "message": "¡Token de refresco revocado con éxito!"
     })

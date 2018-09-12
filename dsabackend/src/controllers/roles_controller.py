@@ -1,39 +1,52 @@
 from flask import Blueprint, jsonify
 from dsabackend.src.models import RoleModel
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity
+)
 
 RolesController = Blueprint('RolesController', __name__)
 
 # This action will return all roles except the role regarding to admins
 @RolesController.route('/', methods=['GET'])
+@jwt_required
 def get_all_roles():
     db_roles = RoleModel.query.order_by(RoleModel.id) 
     
-    roles = [role.serialized for role in db_roles.all() if "admin" not in role.role_name.lower()]
+    roles = [
+        role.serialized 
+        for role in db_roles.all() 
+        if ("admin" not in role.role_name.lower() 
+            or
+            get_jwt_identity()["role"] is "Administrador" )
+    ]
 
     return jsonify({
         "roles": roles
     }), 200
 
 @RolesController.route('/<string:role_name>', methods=['GET'])
+@jwt_required
 def get_role_by_name(role_name):
     role = RoleModel.query.filter_by(role_name=role_name).first()
 
     if role is None:
         return jsonify({
-            "error": "The role '" + role_name + "' does no exist."
+            "error": "El rol '" + role_name + "' no existe."
         }), 404
 
     return jsonify({
         "role": role.serialized
     }), 200
 
-@RolesController.route('/<int:user_id>', methods=['GET'])
-def get_all_users_by_role(user_id):
-    db_role = RoleModel.query.filter_by(id=user_id).first()
+@RolesController.route('/<int:role_id>', methods=['GET'])
+@jwt_required
+def get_all_users_by_role(role_id):
+    db_role = RoleModel.query.filter_by(id=role_id).first()
 
     if db_role is None:
         return jsonify({
-            "error": "User '" + str(user_id) + "' does not exist."
+            "error": "El rol '" + str(role_id) + "' no existe."
         }), 404
 
     users = [user.serialized for user in db_role.users]

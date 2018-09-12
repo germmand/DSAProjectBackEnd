@@ -1,6 +1,10 @@
 from flask import Blueprint, request, jsonify
 from dsabackend.src.handlers import db
 from sqlalchemy.exc import IntegrityError
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity
+)
 from dsabackend.src.models import (
     AdmissionModel,
     UserModel,
@@ -12,19 +16,19 @@ from dsabackend.src.models import (
 AdmissionsController = Blueprint('AdmissionsController', __name__)
 
 @AdmissionsController.route('/', methods=['POST'])
+@jwt_required
 def create_admission():
     data = request.get_json()
 
     try:
         admission_status_id = AdmissionStatusModel.query.filter_by(status_name="En revisión").first().id
 
-        # user_id has to be taken from the token; meanwhile, it's done like this for testing...
         admission = AdmissionModel(data["user_id"], data["program_id"], admission_status_id)
 
         db.session.add(admission)
         db.session.commit()
     except KeyError as ke:
-        return jsonify({"error": str(ke) + " field is missing."}), 400
+        return jsonify({"error": "El campo: " + str(ke) + " no fue definido."}), 400
     except IntegrityError as ie:
         db.session.rollback()
 
@@ -40,16 +44,20 @@ def create_admission():
         }), 500
 
     return jsonify({
-        "message": "User has submitted his program application successfully!",
+        "message": "¡El usuario ha cargado su admissión satisfactoriamente!",
         "admission_submitted": admission.serialized
     }), 201
 
 @AdmissionsController.route('/', methods=['PATCH'])
+@jwt_required
 def accept_or_decline_application():
-    # Add token validation here...
-    # Only administrators can access this endpoint...
-
     data = request.get_json()
+    user = get_jwt_identity()
+
+    if user["role"] != "Administrador":
+        return jsonify({
+            "error": "Sólo administradores tienen acceso a este recurso."
+        }), 401
 
     try:
         admission_id = data['admission_id']
@@ -57,7 +65,7 @@ def accept_or_decline_application():
 
         admission = AdmissionModel.query.get(admission_id)
         if admission is None:
-            return jsonify({"error": "admission '" + str(admission_id) + "' does not exist."}), 404
+            return jsonify({"error": "La admissión '" + str(admission_id) + "' no existe."}), 404
 
         admission.status_id = status_id
         if status_id == 2:
@@ -71,7 +79,7 @@ def accept_or_decline_application():
 
         db.session.commit()
     except KeyError as ke:
-        return jsonify({"error": str(ke) + " field is missing."}), 400
+        return jsonify({"error": "El campo: " + str(ke) + " no fue definido."}), 400
     except IntegrityError as ie:
         db.session.rollback()
 
@@ -84,15 +92,14 @@ def accept_or_decline_application():
 
         return jsonify({"error": str(e)}), 500
 
-    return jsonify({"message": "Admission has been updated successfully!"})
+    return jsonify({"message": "¡La admissión se actualizó con éxito!"})
 
 @AdmissionsController.route('/users/<int:user_id>', methods=['GET'])
+@jwt_required
 def get_admissions_by_user(user_id):
-    # user_id must be taken from the token; but it'll be done like this for testing purposes
-    # in the mean time...
     user = UserModel.query.get(user_id)
     if user is None:
-        return jsonify({"error": "User '" + user_id + "' does not exist."}), 404
+        return jsonify({"error": "El usuario '" + user_id + "' no existe."}), 404
 
     admissions = [admission.serialized for admission in user.admissions]
 
@@ -101,6 +108,7 @@ def get_admissions_by_user(user_id):
     }), 200
 
 @AdmissionsController.route('/update', methods=['PATCH'])
+@jwt_required
 def update_semesters():
     admissions = AdmissionModel.query.all()
 
@@ -133,5 +141,5 @@ def update_semesters():
     db.session.commit()
     
     return jsonify({
-        "message": "Admissions were updated successfully!"
+        "message": "¡Las admissiones se actualizaron correctamente!"
     }), 200
