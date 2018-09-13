@@ -26,7 +26,7 @@ def get_users():
 
     return jsonify(users = [user.serialized for user in users]), 200
 
-@UsersController.route('/<int:user_id>', methods=['GET'])
+@UsersController.route('/<string:user_id>', methods=['GET'])
 @jwt_required
 def get_user_by_id(user_id):
     user = UserModel.query.get(user_id)
@@ -38,7 +38,7 @@ def get_user_by_id(user_id):
 
     return jsonify(user.serialized), 200
 
-@UsersController.route('/<int:user_id>', methods=['DELETE'])
+@UsersController.route('/<string:user_id>', methods=['DELETE'])
 @jwt_required
 def delete_user_by_id(user_id):
     if get_jwt_identity()["role"] != "Administrador":
@@ -100,7 +100,7 @@ def create_new_user():
         "user_created": user.serialized
     }), 201
 
-@UsersController.route('/<int:user_id>', methods=['PUT'])
+@UsersController.route('/<string:user_id>', methods=['PUT'])
 @jwt_required
 def update_user_data(user_id):
     user = UserModel.query.get(user_id)

@@ -1,10 +1,13 @@
 from flask import Blueprint, request, jsonify
 from dsabackend.src.handlers import db
 from sqlalchemy.exc import IntegrityError
+from dsabackend.src.helpers import get_admission_quantity_by_status
+
 from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity
 )
+
 from dsabackend.src.models import (
     AdmissionModel,
     UserModel,
@@ -94,17 +97,46 @@ def accept_or_decline_application():
 
     return jsonify({"message": "¡La admissión se actualizó con éxito!"})
 
-@AdmissionsController.route('/users/<int:user_id>', methods=['GET'])
+@AdmissionsController.route('/users/<string:user_id>', methods=['GET'])
 @jwt_required
 def get_admissions_by_user(user_id):
     user = UserModel.query.get(user_id)
     if user is None:
-        return jsonify({"error": "El usuario '" + user_id + "' no existe."}), 404
+        return jsonify({"error": "El usuario '" + str(user_id) + "' no existe."}), 404
 
     admissions = [admission.serialized for admission in user.admissions]
 
     return jsonify({
         "admissions": admissions
+    }), 200
+
+@AdmissionsController.route('/statuses/<string:user_id>', methods=['GET'])
+@jwt_required
+def get_admissions_category(user_id):
+    try: 
+        user = UserModel.query.get(user_id)
+        if user is None:
+            return jsonify({
+                "error": "El usuario '" + str(user_id) + "' no existe."
+            }), 404
+
+        review_status = get_admission_quantity_by_status('En revisión', user)
+        accepted_status = get_admission_quantity_by_status('Aceptada', user)
+        declined_status = get_admission_quantity_by_status('Declinada', user)
+    except IntegrityError as ie:
+        detail_msg_index = str(ie).find("DETAIL:")
+        detailed_extracted_message = str(ie)[detail_msg_index + 9:str(ie).find("\n", detail_msg_index)]
+
+        return jsonify({"error": detailed_extracted_message}), 400
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+    return jsonify({
+        "review": review_status,
+        "accepted": accepted_status,
+        "declined": declined_status
     }), 200
 
 @AdmissionsController.route('/update', methods=['PATCH'])
