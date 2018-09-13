@@ -39,6 +39,17 @@ def get_role_by_name(role_name):
         "role": role.serialized
     }), 200
 
+# Éste endpoint es para el signup.
+# Ya que sólo se pueden registrar estudiantes desde ese form.
+# Por ende, no contiene jwt_required.
+@RolesController.route('/student', methods=['GET'])
+def get_student_role():
+    role = RoleModel.query.filter_by(role_name='Estudiante').first()
+
+    return jsonify({
+        "role": role.serialized
+    }), 200
+
 @RolesController.route('/<int:role_id>', methods=['GET'])
 @jwt_required
 def get_all_users_by_role(role_id):
