@@ -16,15 +16,18 @@ class GraduateProgramModel(db.Model):
         lazy='select',
         backref=db.backref('program', lazy='joined'))
 
-    def __init__(self, name):
+    def __init__(self, name, type):
         self.program_name = name
+        self.type_id = type
 
-    def __init__(self, name, type, subjs):
-        self.program_name = name
-        self.type = type
-        
-        for subject in subjs:
-            self.subjects.append(subject)
+    @property
+    def serialized(self):
+        return {
+            "program_id": self.id,
+            "program_name": self.program_name,
+            "area_id": self.area_id,
+            "type_id": self.type_id,
+        }
 
     def __repr__(self):
         return '<GraduateProgramModel %r>' % (self.program_name)

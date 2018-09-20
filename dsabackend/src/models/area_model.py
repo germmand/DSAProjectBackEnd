@@ -12,11 +12,13 @@ class AreaModel(db.Model):
     def __init__(self, name):
         self.area_name = name
 
-    def __init__(self, name, programs):
-        self.area_name = name
-
-        for program in programs:
-            self.graduate_programs.append(program)
+    @property
+    def serialized(self):
+        return {
+            "area_id": self.id,
+            "area_name": self.area_name,
+            "area_programs": [program.serialized for program in self.graduate_programs]
+        }
 
     def __repr__(self):
         return '<AreaModel %r>' % (self.area_name)
