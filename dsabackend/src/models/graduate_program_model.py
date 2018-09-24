@@ -26,7 +26,7 @@ class GraduateProgramModel(db.Model):
             "program_id": self.id,
             "program_name": self.program_name,
             "area_id": self.area_id,
-            "type_id": self.type_id,
+            "type_name": self.type.type_name
         }
 
     def __repr__(self):
