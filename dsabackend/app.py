@@ -16,7 +16,8 @@ from dsabackend.src.controllers import (
     RolesController,
     AdmissionsController,
     SubjectsController,
-    AreasController
+    AreasController,
+    ProgramsController
 )
 
 # Creating Flask Application
@@ -33,6 +34,7 @@ app.register_blueprint(RolesController, url_prefix='/api/roles')
 app.register_blueprint(AdmissionsController, url_prefix='/api/admissions')
 app.register_blueprint(SubjectsController, url_prefix='/api/subjects')
 app.register_blueprint(AreasController, url_prefix='/api/areas')
+app.register_blueprint(ProgramsController, url_prefix='/api/programs')
 
 # Adding SQLAlchemy support
 app.config['SQLALCHEMY_DATABASE_URI'] = DbConfig.DATABASE_URI

@@ -26,6 +26,7 @@ class GraduateProgramModel(db.Model):
             "program_id": self.id,
             "program_name": self.program_name,
             "area_id": self.area_id,
+            "area_name": self.area.area_name,
             "type_name": self.type.type_name
         }
 

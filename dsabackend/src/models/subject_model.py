@@ -31,5 +31,5 @@ class SubjectModel(db.Model):
             "credits": self.subject_credits,
             "hours_per_week": self.hours_per_week,
             "weeks": self.amount_of_weeks,
-            "semester": self.subject_semester
+            "subject_semester": self.subject_semester
         }

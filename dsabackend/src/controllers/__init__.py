@@ -5,3 +5,4 @@ from dsabackend.src.controllers.roles_controller import RolesController
 from dsabackend.src.controllers.admissions_controller import AdmissionsController
 from dsabackend.src.controllers.subjects_controller import SubjectsController
 from dsabackend.src.controllers.areas_controller import AreasController
+from dsabackend.src.controllers.programs_controller import ProgramsController
