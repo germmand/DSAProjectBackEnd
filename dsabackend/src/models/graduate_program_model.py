@@ -20,6 +20,10 @@ class GraduateProgramModel(db.Model):
         self.program_name = name
         self.type_id = type
 
+    def appendSubjects(self, new_subjects):
+        for subject in new_subjects:
+            self.subjects.append(subject) 
+
     @property
     def serialized(self):
         return {

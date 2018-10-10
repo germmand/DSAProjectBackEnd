@@ -12,6 +12,10 @@ class AreaModel(db.Model):
     def __init__(self, name):
         self.area_name = name
 
+    def appendPrograms(self, programs):
+        for program in programs:
+            self.graduate_programs.append(program)
+
     @property
     def serialized(self):
         return {

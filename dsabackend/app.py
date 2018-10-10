@@ -3,6 +3,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from passlib.hash import pbkdf2_sha256
 
 from dsabackend.src.handlers import db
 from dsabackend.config import (
@@ -79,6 +80,19 @@ def seed():
 
         print("Roles were staged and are ready to go into the database...")
         print("----------")
+        print("Staging example admin user...")
+
+        user = UserModel("V-26756076", 
+                         "example@example.com",
+                         pbkdf2_sha256.hash("my_shitty_password"),
+                         "Prueba Administrador",
+                         1)
+
+        if UserModel.query.filter_by(id=user.id).first() is None:
+            db.session.add(user)
+        
+        print("Example admin user staged  successfully.")
+        print("----------")
         print("Creating types and statuses for admissions and programs...")
 
         tipo_modular = ProgramTypeModel("Modular")
@@ -129,23 +143,29 @@ def seed():
         biologia_molecular = SubjectModel("Biología Molecular", 4, 12, 4, 2)
         inmunologia_avanzada = SubjectModel("Inmunología Avanzada", 4, 12, 4, 3)
 
-        postgrado_fisica = GraduateProgramModel("Postgrado en Física", tipo_semestral, [
-            mec_cuantica, 
-            mec_estadistica, 
+        postgrado_fisica = GraduateProgramModel("Postgrado en Física", tipo_semestral)
+        postgrado_fisica.appendSubjects([
+            mec_cuantica,
+            mec_estadistica,
             teoria_dielectricos
         ])
-        postgrado_matematica = GraduateProgramModel("Postgrado en Matemáticas (Maestría)", tipo_semestral, [
+    
+        postgrado_matematica = GraduateProgramModel("Postgrado en Matemáticas (Maestría)", tipo_semestral)  
+        postgrado_matematica.appendSubjects([
             teoria_probabilidad,
             algebra_lineal,
             algebra_multilineal
         ])
-        postgrado_biologia = GraduateProgramModel("Postgrado en Biología Aplicada (Maestría)", tipo_modular, [
+
+        postgrado_biologia = GraduateProgramModel("Postgrado en Biología Aplicada (Maestría)", tipo_modular)
+        postgrado_biologia.appendSubjects([
             bioquimica,
             biologia_molecular,
             inmunologia_avanzada
         ])
 
-        cs_exactas = AreaModel("Ciencias Exactas y Naturales", [
+        cs_exactas = AreaModel("Ciencias Exactas y Naturales")
+        cs_exactas.appendPrograms([
             postgrado_fisica,
             postgrado_matematica,
             postgrado_biologia
@@ -163,23 +183,29 @@ def seed():
         elasticidad = SubjectModel("Elasticidad", 4, 12, 4, 2)
         ing_materiales = SubjectModel("Ingeniería de Materiales", 4, 12, 4, 3)
 
-        postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Maestría)", tipo_semestral, [
+        postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Maestría)", tipo_semestral)
+        postgrado_comp.appendSubjects([
             teoria_grafos,
             redes_neuronales,
             criptografia
         ])
-        postgrado_electrica = GraduateProgramModel("Postgrado en Ingeniería Eléctrica (Maestría)", tipo_semestral, [
+
+        postgrado_electrica = GraduateProgramModel("Postgrado en Ingeniería Eléctrica (Maestría)", tipo_semestral)
+        postgrado_electrica.appendSubjects([
             robotica,
             sistemas_control,
             instrumentacion
         ])
-        postgrado_mecanica = GraduateProgramModel("Postgrado en Ingeniería Mecánica (Maestría)", tipo_semestral, [
+
+        postgrado_mecanica = GraduateProgramModel("Postgrado en Ingeniería Mecánica (Maestría)", tipo_semestral)
+        postgrado_mecanica.appendSubjects([
             dinamica,
             elasticidad,
             ing_materiales
         ])
 
-        cs_ingenieria = AreaModel("Tecnología y Ciencias de la Ingeniería", [
+        cs_ingenieria = AreaModel("Tecnología y Ciencias de la Ingeniería")
+        cs_ingenieria.appendPrograms([
             postgrado_comp,
             postgrado_electrica,
             postgrado_mecanica
@@ -197,23 +223,29 @@ def seed():
         cardiologia_ii = SubjectModel("Cardiología II", 4, 12, 4, 2)
         cardiologia_iii = SubjectModel("Cardiología III", 4, 12, 4, 3)
 
-        postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)", tipo_modular, [
+        postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)", tipo_modular)
+        postgrado_cirugia.appendSubjects([
             cirugia_i,
             cirugia_ii,
             cirugia_iii,
         ])
-        postgrado_dermatologia = GraduateProgramModel("Postgrado en Dermatología (Especialización)", tipo_modular, [
+
+        postgrado_dermatologia = GraduateProgramModel("Postgrado en Dermatología (Especialización)", tipo_modular)
+        postgrado_dermatologia.appendSubjects([
             dermatologia_i,
             dermatologia_ii,
             dermatologia_iii,
-        ]) 
-        postgrado_cardiologia = GraduateProgramModel("Postgrado en Cardiología (Especialización)", tipo_modular, [
+        ])
+
+        postgrado_cardiologia = GraduateProgramModel("Postgrado en Cardiología (Especialización)", tipo_modular)
+        postgrado_cardiologia.appendSubjects([
             cardiologia_i,
             cardiologia_ii,
             cardiologia_iii,
         ])
 
-        cs_medicas = AreaModel("Tecnología y Ciencias Médicas", [
+        cs_medicas = AreaModel("Tecnología y Ciencias Médicas")
+        cs_medicas.appendPrograms([
             postgrado_cirugia,
             postgrado_dermatologia,
             postgrado_cardiologia
