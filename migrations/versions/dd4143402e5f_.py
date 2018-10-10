@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ed6018437c43
+Revision ID: dd4143402e5f
 Revises: 
-Create Date: 2018-09-01 15:10:37.931904
+Create Date: 2018-10-10 19:28:58.398477
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ed6018437c43'
+revision = 'dd4143402e5f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,6 +29,12 @@ def upgrade():
     sa.Column('area_name', sa.String(length=150), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('area_name')
+    )
+    op.create_table('Degree_Types',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('degree_name', sa.String(length=200), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('degree_name')
     )
     op.create_table('Program_Types',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
@@ -58,7 +64,9 @@ def upgrade():
     sa.Column('program_name', sa.String(length=200), nullable=False),
     sa.Column('area_id', sa.Integer(), nullable=False),
     sa.Column('type_id', sa.Integer(), nullable=False),
+    sa.Column('degree_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['area_id'], ['Areas.id'], ),
+    sa.ForeignKeyConstraint(['degree_id'], ['Degree_Types.id'], ),
     sa.ForeignKeyConstraint(['type_id'], ['Program_Types.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -118,6 +126,7 @@ def downgrade():
     op.drop_table('Roles')
     op.drop_table('Revoke_Tokens')
     op.drop_table('Program_Types')
+    op.drop_table('Degree_Types')
     op.drop_table('Areas')
     op.drop_table('Admission_Statuses')
     # ### end Alembic commands ###

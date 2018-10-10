@@ -13,12 +13,14 @@ class UserModel(db.Model):
         lazy='select',
         backref=db.backref('user', lazy='joined'))
 
-    def __init__(self, id, email, password, fullname, role_identifier):
+    def __init__(self, id, email, password, fullname, user_role):
         self.id = id
         self.email = email
         self.password = password
         self.fullname = fullname
-        self.role_id = role_identifier
+
+        # This field exist because of the backref of its relational table.
+        self.role = user_role
 
     def __repr__(self):
         return '<UserModel %r>' % (self.email)

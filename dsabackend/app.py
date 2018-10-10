@@ -67,11 +67,15 @@ def check_blacklisted_tokens(decrypted_token):
 def seed(): 
     try:
         print("Creating roles...")
+
+        admin_role = RoleModel("Administrador")
+        student_role = RoleModel("Estudiante")
+        professor_role = RoleModel("Profesor")
      
         roles = [
-            RoleModel("Administrador"),
-            RoleModel("Estudiante"),
-            RoleModel("Profesor")
+            admin_role,
+            student_role,
+            professor_role
         ]
 
         for role in roles:
@@ -80,13 +84,31 @@ def seed():
 
         print("Roles were staged and are ready to go into the database...")
         print("----------")
+        print("Staging programs' degrees")
+
+        ms_degree = DegreeModel("Maestría")
+        phd_degree = DegreeModel("Doctorado")
+        spe_degree = DegreeModel("Especialización")
+
+        degrees = [
+            ms_degree,
+            phd_degree,
+            spe_degree
+        ]
+
+        for degree in degrees:
+            if DegreeModel.query.filter_by(degree_name=degree.degree_name).first() is None:
+                db.session.add(degree) 
+
+        print("Degrees were staged and are ready to go into the database...")
+        print("----------")
         print("Staging example admin user...")
 
         user = UserModel("V-26756076", 
                          "example@example.com",
                          pbkdf2_sha256.hash("my_shitty_password"),
                          "Prueba Administrador",
-                         1)
+                         admin_role)
 
         if UserModel.query.filter_by(id=user.id).first() is None:
             db.session.add(user)
@@ -143,21 +165,27 @@ def seed():
         biologia_molecular = SubjectModel("Biología Molecular", 4, 12, 4, 2)
         inmunologia_avanzada = SubjectModel("Inmunología Avanzada", 4, 12, 4, 3)
 
-        postgrado_fisica = GraduateProgramModel("Postgrado en Física", tipo_semestral)
+        postgrado_fisica = GraduateProgramModel("Postgrado en Física", 
+                                                tipo_semestral,
+                                                phd_degree)
         postgrado_fisica.appendSubjects([
             mec_cuantica,
             mec_estadistica,
             teoria_dielectricos
         ])
     
-        postgrado_matematica = GraduateProgramModel("Postgrado en Matemáticas (Maestría)", tipo_semestral)  
+        postgrado_matematica = GraduateProgramModel("Postgrado en Matemáticas (Maestría)", 
+                                                    tipo_semestral,
+                                                    ms_degree)  
         postgrado_matematica.appendSubjects([
             teoria_probabilidad,
             algebra_lineal,
             algebra_multilineal
         ])
 
-        postgrado_biologia = GraduateProgramModel("Postgrado en Biología Aplicada (Maestría)", tipo_modular)
+        postgrado_biologia = GraduateProgramModel("Postgrado en Biología Aplicada (Maestría)",
+                                                  tipo_modular,
+                                                  ms_degree)
         postgrado_biologia.appendSubjects([
             bioquimica,
             biologia_molecular,
@@ -183,21 +211,27 @@ def seed():
         elasticidad = SubjectModel("Elasticidad", 4, 12, 4, 2)
         ing_materiales = SubjectModel("Ingeniería de Materiales", 4, 12, 4, 3)
 
-        postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Maestría)", tipo_semestral)
+        postgrado_comp = GraduateProgramModel("Postgrado en Ingeniería en Computación (Doctorado)", 
+                                              tipo_semestral,
+                                              phd_degree)
         postgrado_comp.appendSubjects([
             teoria_grafos,
             redes_neuronales,
             criptografia
         ])
 
-        postgrado_electrica = GraduateProgramModel("Postgrado en Ingeniería Eléctrica (Maestría)", tipo_semestral)
+        postgrado_electrica = GraduateProgramModel("Postgrado en Ingeniería Eléctrica (Doctorado)", 
+                                                   tipo_semestral,
+                                                   phd_degree)
         postgrado_electrica.appendSubjects([
             robotica,
             sistemas_control,
             instrumentacion
         ])
 
-        postgrado_mecanica = GraduateProgramModel("Postgrado en Ingeniería Mecánica (Maestría)", tipo_semestral)
+        postgrado_mecanica = GraduateProgramModel("Postgrado en Ingeniería Mecánica (Maestría)", 
+                                                   tipo_semestral,
+                                                   ms_degree)
         postgrado_mecanica.appendSubjects([
             dinamica,
             elasticidad,
@@ -223,21 +257,27 @@ def seed():
         cardiologia_ii = SubjectModel("Cardiología II", 4, 12, 4, 2)
         cardiologia_iii = SubjectModel("Cardiología III", 4, 12, 4, 3)
 
-        postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)", tipo_modular)
+        postgrado_cirugia = GraduateProgramModel("Postgrado en Cirugía General (Especialización)", 
+                                                 tipo_modular,
+                                                 spe_degree)
         postgrado_cirugia.appendSubjects([
             cirugia_i,
             cirugia_ii,
             cirugia_iii,
         ])
 
-        postgrado_dermatologia = GraduateProgramModel("Postgrado en Dermatología (Especialización)", tipo_modular)
+        postgrado_dermatologia = GraduateProgramModel("Postgrado en Dermatología (Especialización)", 
+                                                      tipo_modular,
+                                                      spe_degree)
         postgrado_dermatologia.appendSubjects([
             dermatologia_i,
             dermatologia_ii,
             dermatologia_iii,
         ])
 
-        postgrado_cardiologia = GraduateProgramModel("Postgrado en Cardiología (Especialización)", tipo_modular)
+        postgrado_cardiologia = GraduateProgramModel("Postgrado en Cardiología (Especialización)", 
+                                                     tipo_modular,
+                                                     spe_degree)
         postgrado_cardiologia.appendSubjects([
             cardiologia_i,
             cardiologia_ii,
