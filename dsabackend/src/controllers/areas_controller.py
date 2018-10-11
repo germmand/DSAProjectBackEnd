@@ -4,7 +4,9 @@ from dsabackend.src.handlers import db
 from dsabackend.src.models import (
     AreaModel,
     GraduateProgramModel,
-    SubjectModel
+    SubjectModel,
+    ProgramTypeModel,
+    DegreeModel
 )
 from flask_jwt_extended import (
     jwt_required,
@@ -95,8 +97,12 @@ def add_program_to_area(area_id):
     try:
         programs = request.get_json()["area_programs"]
         for program in programs:
+            program_type = ProgramTypeModel.query.get(program["program_type"])
+            program_degree = DegreeModel.query.get(program["program_degree"])
+
             new_program = GraduateProgramModel(program["program_name"], 
-                                               program["program_type"])
+                                               program_type,
+                                               program_degree)
             subjects = program["program_subjects"]
             
             for subject in subjects:
@@ -106,9 +112,9 @@ def add_program_to_area(area_id):
                                  subject["subject_hours"],
                                  subject["subject_weeks"],
                                  subject["subject_semester"]))
-            
-            area.graduate_programs.append(new_program)
 
+            new_program.area = area
+        
         db.session.commit()
     except KeyError as ke:
         return jsonify({

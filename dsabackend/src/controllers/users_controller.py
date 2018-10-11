@@ -70,11 +70,17 @@ def create_new_user():
         if search('^V-\d+$', data["id"]) is None:
             return jsonify({"error": "La cédula tiene que seguir el siguiente formato: V-12345678"}), 400
 
+        role = RoleModel.query.get(data["role_id"])
+        if role is None:
+            return jsonify({
+                "error": "El rol '" + str(data["role_id"]) + "' no existe."
+            }), 404
+
         user = UserModel(data["id"],
                          data["email"], 
                          pbkdf2_sha256.hash(data["password"]), 
                          data["fullname"], 
-                         data["role_id"])
+                         role)
 
         db.session.add(user)
         db.session.commit()

@@ -105,7 +105,7 @@ def seed():
         print("Staging example admin user...")
 
         user = UserModel("V-26756076", 
-                         "example@example.com",
+                         "email@email.com",
                          pbkdf2_sha256.hash("my_shitty_password"),
                          "Prueba Administrador",
                          admin_role)
