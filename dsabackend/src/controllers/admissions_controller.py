@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from dsabackend.src.handlers import db
 from sqlalchemy.exc import IntegrityError
 from dsabackend.src.helpers import get_admission_quantity_by_status
+from sqlalchemy import and_
 
 from flask_jwt_extended import (
     jwt_required,
@@ -24,9 +25,21 @@ def create_admission():
     data = request.get_json()
 
     try:
-        admission_status_id = AdmissionStatusModel.query.filter_by(status_name="En revisión").first().id
+        admission_review_id = AdmissionStatusModel.query.filter_by(status_name="En revisión").first().id
+        admission_accepted_id = AdmissionStatusModel.query.filter_by(status_name="Aceptada").first().id
 
-        admission = AdmissionModel(data["user_id"], data["program_id"], admission_status_id)
+        existent_admission = AdmissionModel.query.filter(
+            and_(AdmissionModel.user_id==data["user_id"],
+                 AdmissionModel.program_id==data["program_id"])).first()
+
+        if existent_admission is not None:
+            if (existent_admission.status_id == admission_review_id or
+                existent_admission.status_id == admission_accepted_id):
+                return jsonify({
+                    "error": "El usuario '" + data["user_id"] + "' ya está en el programa '" + str(data["program_id"])
+                }), 403
+
+        admission = AdmissionModel(data["user_id"], data["program_id"], admission_review_id)
 
         db.session.add(admission)
         db.session.commit()

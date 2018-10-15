@@ -65,9 +65,12 @@ DSAProject es un proyecto para la asignatura de Desarrollo de Software Avanzado 
  - Actualizar en `jwt_config.py` la llave para los tokens de acceso y de refreso (propiedad `JWT_SECRET`) con cualquier llave de preferencia.
 
 
-5. **Hacerle _seeding_ a la base de datos para llenarla con datos de prueba.**
+5. **Actualizar base de datos por migraciones y hacer _seeding_ para agregar datos de prueba.**
 
  - Ejecutar desde la raíz del proyecto:
+   `$ python run.py db upgrade`
+
+ - Finalmente agregamos datos de prueba con:
  
    `$ python run.py seed`
 
