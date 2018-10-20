@@ -125,6 +125,24 @@ def get_admissions_by_user(user_id):
         "admissions": admissions
     }), 200
 
+@AdmissionsController.route('/new', methods=['GET'])
+@jwt_required
+def get_new_admissions():
+    user = get_jwt_identity()
+
+    if user["role"] != "Administrador":
+        return jsonify({
+            "error": "Sólo administradores tienen acceso a este recurso."
+        }), 401
+
+    pending_status = AdmissionStatusModel.query.filter_by(status_name="En revisión").first()
+    admissions = [{**admission.serialized, **admission.user.serialized} 
+                  for admission in pending_status.admissions]
+
+    return jsonify({
+        "admissions": admissions
+    }), 200
+
 @AdmissionsController.route('/statuses/<string:user_id>', methods=['GET'])
 @jwt_required
 def get_admissions_category(user_id):
