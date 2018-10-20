@@ -136,7 +136,7 @@ def get_new_admissions():
         }), 401
 
     pending_status = AdmissionStatusModel.query.filter_by(status_name="En revisión").first()
-    admissions = [{**admission.serialized, **admission.user.serialized} 
+    admissions = [{**admission.serialized, **admission.user.serialized, "area": admission.program.area.area_name} 
                   for admission in pending_status.admissions]
 
     return jsonify({
