@@ -77,21 +77,23 @@ def accept_or_decline_application():
 
     try:
         admission_id = data['admission_id']
-        status_id = data['status_id']
+        status_name = data['status_name']
 
         admission = AdmissionModel.query.get(admission_id)
+        admission_status = AdmissionStatusModel.query.filter_by(status_name=status_name).first()
         if admission is None:
             return jsonify({"error": "La admissión '" + str(admission_id) + "' no existe."}), 404
+        elif admission_status is None:
+            return jsonify({"error": "El status '" + status_name + "' no existe."}), 404
 
-        admission.status_id = status_id
-        if status_id == 2:
-            admission.current_semester = 1  
-
-        db.session.commit()
-
-        if admission.current_semester == 1:
+        admission.status = admission_status
+        if admission_status.status_name == "Aceptada":
             for subject in admission.program.subjects:
                 db.session.add(AdmissionSubjectRelation(subject.id, admission.id, 3))
+
+            if (admission.program.type.type_name == "Semestral" and
+                admission.current_semester == 0):
+                admission.current_semester = 1
 
         db.session.commit()
     except KeyError as ke:
