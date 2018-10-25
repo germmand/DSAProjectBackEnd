@@ -11,6 +11,7 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity
 )
+from dsabackend.src.helpers import get_subjects_from_status
 
 SubjectsController = Blueprint('SubjectsController', __name__)
 
@@ -52,6 +53,29 @@ def update_subject_on_admission():
 
     return jsonify({
         "message": "La asignatura para la admissión '" + str(admission_id) + "' se ha actualizado con éxito."}), 200
+
+@SubjectsController.route('/all/<int:admission_id>', methods=['GET'])
+@jwt_required
+def get_all_subjects(admission_id):
+    taken_status = SubjectStatusModel.query.filter_by(status_name='Cursada').first()
+    taking_status = SubjectStatusModel.query.filter_by(status_name='Cursando').first()
+    willtake_status = SubjectStatusModel.query.filter_by(status_name='Por cursar').first()
+
+    taken_subjects = get_subjects_from_status(admission_id, taken_status)
+    taking_subjects = get_subjects_from_status(admission_id, taking_status)
+    willtake_subjects = get_subjects_from_status(admission_id, willtake_status)
+      
+    taken_subjects_serialized = [subject.serialized for subject in taken_subjects]
+    taking_subjects_serialized = [subject.serialized for subject in taking_subjects]
+    willtake_subjects_serialized = [subject.serialized for subject in willtake_subjects]
+
+    subjects = {
+        "taken_subjects": taken_subjects_serialized,
+        "taking_subjects": taking_subjects_serialized,
+        "willtake_subjects": willtake_subjects_serialized
+    }
+
+    return jsonify(subjects), 200
 
 @SubjectsController.route('/', methods=['GET'])
 @jwt_required
