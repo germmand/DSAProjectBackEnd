@@ -64,6 +64,52 @@ def create_admission():
         "admission_submitted": admission.serialized
     }), 201
 
+@AdmissionsController.route('/<int:admission_id>/update-subjects', methods=['PATCH'])
+@jwt_required
+def update_subjects_on_admission(admission_id):
+    data = request.get_json()
+
+    try:
+        subjects_id = data['subjects_id']
+        status_name = data['status_name']
+
+        subject_status = SubjectStatusModel.query.filter_by(status_name=status_name).first()
+        if subject_status is None:
+            return jsonify({
+                "error": "El estado '" + status_name + "' no existe."
+            }), 404
+
+        for subject_id in subjects_id:
+            admission_subject = AdmissionSubjectRelation.query.filter(
+                and_(AdmissionSubjectRelation.subject_id==subject_id,
+                     AdmissionSubjectRelation.admission_id==admission_id)).first()
+            if admission_subject is None:
+                return jsonify({
+                    "error": "La asignatura: '" + str(subject_id) + 
+                             "' no existe en la admission: '" + str(admission_id) + "'."
+                })
+            admission_subject.status = subject_status
+ 
+        db.session.commit()
+    except KeyError as ke:
+        return jsonify({"error": "El campo: " + str(ke) + " no fue definido."}), 400
+    except IntegrityError as ie:
+        db.session.rollback()
+
+        detail_msg_index = str(ie).find("DETAIL:")
+        detailed_extracted_message = str(ie)[detail_msg_index + 9:str(ie).find("\n", detail_msg_index)]
+
+        return jsonify({"error": detailed_extracted_message}), 400
+    except Exception as e:
+        db.session.rollback()
+
+        return jsonify({"error": str(e)}), 500
+
+    return jsonify({
+        "message": "Las asignaturas se actualizaron correctamente."
+    }), 200
+         
+
 @AdmissionsController.route('/', methods=['PATCH'])
 @jwt_required
 def accept_or_decline_application():
