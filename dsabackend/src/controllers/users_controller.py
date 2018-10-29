@@ -115,17 +115,22 @@ def update_user_data(user_id):
     if user is None:
         return jsonify({
             "error": "El usuario '" + str(user_id) + "' no existe."
-        }), 400
-
-    if "email" in data:
-        user.email = data["email"]
-    if "password" in data:
-        user.password = data["password"]
-    if "fullname" in data:
-        user.fullname = data["fullname"]
+        }), 404
 
     try:
+        if not pbkdf2_sha256.verify(data["password"], user.password):
+            return jsonify({
+                "error": "La contraseña es incorrecta."
+            }), 401 
+
+        user.fullname = data["fullname"]
+        user.email = data["email"]
+        if "new_password" in data:
+            user.password = pbkdf2_sha256.hash(data["new_password"]) 
+
         db.session.commit()
+    except KeyError as ke:
+        return jsonify({"error": "El campo: '" + str(ke) + "' es requerido."}), 400
     except IntegrityError as ie:
         db.session.rollback()
 
