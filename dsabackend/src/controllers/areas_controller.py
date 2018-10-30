@@ -97,8 +97,17 @@ def add_program_to_area(area_id):
     try:
         programs = request.get_json()["area_programs"]
         for program in programs:
-            program_type = ProgramTypeModel.query.get(program["program_type"])
-            program_degree = DegreeModel.query.get(program["program_degree"])
+            program_type = ProgramTypeModel.query.filter_by(type_name=program["program_type"]).first()
+            if program_type is None:
+                return jsonify({
+                    "error": "El tipo: '" + program["program_type"] + "' no existe."
+                }), 404
+
+            program_degree = DegreeModel.query.filter_by(degree_name=program["degree_type"]).first()
+            if program_degree is None:
+                return jsonify({
+                    "error": "El grado: '" + program["degree_type"] + "' no existe."
+                }), 404
 
             new_program = GraduateProgramModel(program["program_name"], 
                                                program_type,
@@ -108,10 +117,10 @@ def add_program_to_area(area_id):
             for subject in subjects:
                 new_program.subjects.append(
                     SubjectModel(subject["subject_name"],
-                                 subject["subject_credits"],
-                                 subject["subject_hours"],
-                                 subject["subject_weeks"],
-                                 subject["subject_semester"]))
+                                 subject["credits"],
+                                 subject["hours"],
+                                 subject["weeks"],
+                                 subject["semester"]))
 
             new_program.area = area
         
